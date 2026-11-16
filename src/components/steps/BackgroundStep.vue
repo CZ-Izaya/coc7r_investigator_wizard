@@ -5,25 +5,23 @@ import { t, dataName, flavorText, storyText } from '../../i18n.js';
 import { eraDiceTables } from '../../data/eras.js';
 import {
   APPEARANCE_DESCRIPTIONS,
-  BELIEFS,
+  PERSONALITY_TRAITS,
+  PERSONALITY_FLAWS,
   IMPORTANT_PERSON_TYPES,
-  IMPORTANT_PERSON_REASONS,
   MEANINGFUL_PLACES,
   PRECIOUS_ITEMS,
-  TRAITS,
   ERA_BACKGROUNDS,
 } from '../../data/story.js';
 
-// 标记 random:true 的字段可在标签旁显示掷骰按钮，随机抽取文本填入
+// 修订版八项背景要素：前四项车卡时至少各写一条；伤势与疤痕、恐惧为游戏中记录项
+// 法术典籍与遭遇奇异实体由「克苏鲁神话」步骤（mythosItems/spells/contacts）承载
 const fields = [
   { key: 'app', label: () => t('bg.fields.app'), ph: () => t('bg.phs.app'), random: true },
-  { key: 'belief', label: () => t('bg.fields.belief'), ph: () => t('bg.phs.belief'), random: true },
-  { key: 'importantPerson', label: () => t('bg.fields.importantPerson'), ph: () => t('bg.phs.importantPerson'), random: true },
-  { key: 'place', label: () => t('bg.fields.place'), ph: () => t('bg.phs.place'), random: true },
+  { key: 'personality', label: () => t('bg.fields.personality'), ph: () => t('bg.phs.personality'), random: true },
+  { key: 'personPlace', label: () => t('bg.fields.personPlace'), ph: () => t('bg.phs.personPlace'), random: true },
   { key: 'item', label: () => t('bg.fields.item'), ph: () => t('bg.phs.item'), random: true },
-  { key: 'trait', label: () => t('bg.fields.trait'), ph: () => t('bg.phs.trait'), random: true },
   { key: 'scar', label: () => t('bg.fields.scar'), ph: () => t('bg.phs.scar') },
-  { key: 'mad', label: () => t('bg.fields.mad'), ph: () => t('bg.phs.mad') },
+  { key: 'fear', label: () => t('bg.fields.fear'), ph: () => t('bg.phs.fear') },
   { key: 'desc', label: () => t('bg.fields.desc'), ph: () => t('bg.phs.desc') },
 ];
 
@@ -50,19 +48,15 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// 根据字段返回随机抽取的文本；重要之人需从两张表各取一项组合
-// 注意：eraBg 是 computed，在 setup 函数体中必须用 .value 解包（模板中才会自动解包）
+// 根据字段返回随机抽取的文本；个性需特质＋缺点各掷一次组合，重要之人与地点需人物／地点各取一项
 function randomText(key) {
   const bg = eraBg.value;
   switch (key) {
     case 'app': return storyText(pick(APPEARANCE_DESCRIPTIONS));
-    case 'belief': return storyText(bg.belief ? pick(bg.belief) : pick(BELIEFS));
-    case 'importantPerson':
-      if (bg.importantPerson) return storyText(pick(bg.importantPerson));
-      return `${storyText(pick(IMPORTANT_PERSON_TYPES))}\n${storyText(pick(IMPORTANT_PERSON_REASONS))}`;
-    case 'place': return storyText(bg.place ? pick(bg.place) : pick(MEANINGFUL_PLACES));
-    case 'item': return storyText(bg.item ? pick(bg.item) : pick(PRECIOUS_ITEMS));
-    case 'trait': return storyText(pick(TRAITS));
+    case 'personality': return `${storyText(pick(PERSONALITY_TRAITS))}\n${storyText(pick(PERSONALITY_FLAWS))}`;
+    case 'personPlace':
+      return `${storyText(pick(bg.importantPerson || IMPORTANT_PERSON_TYPES))}\n${storyText(pick(bg.place || MEANINGFUL_PLACES))}`;
+    case 'item': return storyText(pick(bg.item || PRECIOUS_ITEMS));
     default: return '';
   }
 }

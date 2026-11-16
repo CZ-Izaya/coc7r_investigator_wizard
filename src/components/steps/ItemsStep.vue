@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue';
-import { character, saveCharacter, creditRatingValue, livingStandard, cashInfo, currency, creditRange, eraCredit } from '../../store.js';
+import { character, saveCharacter, creditRatingValue, livingStandard, cashInfo, currency, fmtMoney, creditRange, eraCredit } from '../../store.js';
 import { creditBracket, getEra } from '../../data/eras.js';
+import { CURRENCIES } from '../../data/rules.js';
 import { t, dataName, flavorText } from '../../i18n.js';
 
 function addRow(list) { list.push({ name: '' }); saveCharacter(); }
@@ -40,6 +41,13 @@ function rangeLabel(b) {
   if (b.min === -Infinity) return `≤${b.max}`;
   return `${b.min}–${b.max}`;
 }
+
+// 货币手动覆盖选项（中国背景团可选「元」）
+const currencyOptions = ['CNY', 'USD', 'JPY', 'SILVER', 'GBP'].map(k => ({
+  key: k,
+  label: `${CURRENCIES[k].name}（${CURRENCIES[k].symbol}）`,
+}));
+function onCurrencyChange() { saveCharacter(); }
 </script>
 
 <template>
@@ -71,6 +79,14 @@ function rangeLabel(b) {
         <button class="btn sm" @click="addRow(character.assetsRows)"><font-awesome-icon icon="fa-solid fa-plus" /></button>
       </div>
       <div class="card-body">
+        <!-- 货币选择：默认按国籍/时代自动，可手动覆盖 -->
+        <div class="row mb-16" v-if="!creditDef">
+          <label class="lbl grow" style="margin:0">{{ $t('items.currency') }}</label>
+          <select class="inp" style="max-width:220px" v-model="character.currencyOverride" @change="onCurrencyChange">
+            <option value="">{{ $t('items.curAuto') }}</option>
+            <option v-for="c in currencyOptions" :key="c.key" :value="c.key">{{ c.label }}</option>
+          </select>
+        </div>
         <div class="grid-3 mb-16">
           <!-- 信用评级 / 地位（时代特殊定义） -->
           <div class="stat-card">
@@ -102,7 +118,7 @@ function rangeLabel(b) {
           <!-- 标准时代：现金 -->
           <div v-else class="stat-card">
             <div class="stat-label faint small">{{ $t('items.cash', { cur: $dn(currency.name) }) }}</div>
-            <div class="stat-val serif gold">{{ currency.symbol }} {{ cashInfo.amount }}</div>
+            <div class="stat-val serif gold">{{ fmtMoney(cashInfo.amount) }}</div>
           </div>
 
           <!-- 消费水平 / 时代特殊内容 -->

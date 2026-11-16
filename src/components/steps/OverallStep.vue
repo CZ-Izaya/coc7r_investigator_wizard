@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import {
   character, derived, getAllocation, skillValue, skillBaseOf, effectiveAttr, makeSkillKey, packageAdjust,
-  creditRatingValue, livingStandard, cashInfo, currency, isOccupationSkill, eraInfo,
+  creditRatingValue, livingStandard, cashInfo, currency, fmtMoney, isOccupationSkill, eraInfo,
 } from '../../store.js';
 import { ATTR_KEYS, ATTR_LABELS, ATTR_EN } from '../../data/rules.js';
 import { skillGroups, skillGroupOrder, getSkill, getEraSkillGroups, getEraGroupOrder } from '../../data/skills.js';
@@ -23,6 +23,8 @@ const jobDisplay = computed(() => character.jobType === 'preset' ? (character.jo
 const genderDisplay = computed(() => character.gender === '其他' ? (character.genderOther || t('overall.genderOther')) : dataName(character.gender));
 const countryDisplay = computed(() => character.country === '其他' ? (character.countryOther || t('overall.countryOther')) : dataName(character.country));
 const attrSum = computed(() => ATTR_KEYS.reduce((s, k) => s + effectiveAttr(k), 0));
+// 修订版：异变阈值 = 意志的五分之一（向下取整），累计理智损失达到该值即异变
+const changedThreshold = computed(() => Math.floor(effectiveAttr('pow') / 5));
 
 // 时代显示：扩展时代显示全称（如 克苏鲁不败），否则 1920s / 现代
 const eraLabel = computed(() => {
@@ -243,19 +245,23 @@ async function doShare() {
           <section class="paper-section sanity">
             <div class="header"><h1 class="heading"><span class="title">{{ $t('overall.sanity') }}</span><span class="subtitle">{{ $t('overall.sanitySub') }}</span></h1></div>
             <div class="body units">
-              <div class="unit"><span class="u-label">{{ $t('overall.curMax') }}</span><span class="u-val">{{ derived.san }}<span class="u-slash">/</span>{{ derived.sanMax }}</span></div>
+              <div class="unit"><span class="u-label">{{ $t('overall.startVal') }}</span><span class="u-val">{{ derived.sanStart }}</span></div>
+              <div class="unit"><span class="u-label">{{ $t('overall.curVal') }}</span><span class="u-val">{{ derived.san }}</span></div>
+              <div class="unit"><span class="u-label">{{ $t('overall.changedVal') }}</span><span class="u-val">{{ changedThreshold }}</span></div>
             </div>
           </section>
           <section class="paper-section hp">
             <div class="header"><h1 class="heading"><span class="title">{{ $t('overall.hp') }}</span><span class="subtitle">{{ $t('overall.hpSub') }}</span></h1></div>
             <div class="body units">
-              <div class="unit"><span class="u-label">{{ $t('overall.curMax') }}</span><span class="u-val">{{ derived.hp }}<span class="u-slash">/</span>{{ derived.hpMax }}</span></div>
+              <div class="unit"><span class="u-label">{{ $t('overall.startVal') }}</span><span class="u-val">{{ derived.hpMax }}</span></div>
+              <div class="unit"><span class="u-label">{{ $t('overall.curVal') }}</span><span class="u-val">{{ derived.hp }}</span></div>
             </div>
           </section>
           <section class="paper-section mp">
             <div class="header"><h1 class="heading"><span class="title">{{ $t('overall.mp') }}</span><span class="subtitle">{{ $t('overall.mpSub') }}</span></h1></div>
             <div class="body units">
-              <div class="unit"><span class="u-label">{{ $t('overall.curMax') }}</span><span class="u-val">{{ derived.mp }}<span class="u-slash">/</span>{{ derived.mpMax }}</span></div>
+              <div class="unit"><span class="u-label">{{ $t('overall.startVal') }}</span><span class="u-val">{{ derived.mpMax }}</span></div>
+              <div class="unit"><span class="u-label">{{ $t('overall.curVal') }}</span><span class="u-val">{{ derived.mp }}</span></div>
             </div>
           </section>
           <section class="paper-section body-status">
@@ -270,9 +276,10 @@ async function doShare() {
           <section class="paper-section mental-status">
             <div class="header"><h1 class="heading"><span class="title">{{ $t('overall.mental') }}</span></h1></div>
             <div class="body status-grid">
+              <div class="status"><span class="cb"></span><span>{{ $t('overall.shock') }}</span></div>
               <div class="status"><span class="cb"></span><span>{{ $t('overall.tempMad') }}</span></div>
-              <div class="status"><span class="cb"></span><span>{{ $t('overall.permMad') }}</span></div>
               <div class="status"><span class="cb"></span><span>{{ $t('overall.indefMad') }}</span></div>
+              <div class="status"><span class="cb"></span><span>{{ $t('overall.permMad') }}</span></div>
             </div>
           </section>
         </div>
@@ -376,7 +383,7 @@ async function doShare() {
                 <span class="area-label">{{ $t('overall.eraFeature') }}</span>
                 <div class="area-text">{{ eraInfoText }}</div>
               </div>
-              <div v-for="f in ['app','belief','importantPerson','place','item','trait','scar','mad']" :key="f" class="area">
+              <div v-for="f in ['app','personality','personPlace','item','scar','fear']" :key="f" class="area">
                 <span class="area-label">{{ $t('overall.storyFields.' + f) }}</span>
                 <div class="area-text">{{ bg[f] }}</div>
               </div>
@@ -400,7 +407,7 @@ async function doShare() {
             <div class="header"><h1 class="heading"><span class="title">{{ $t('overall.assets') }}</span><span class="subtitle">{{ $t('overall.assetsSub2') }}</span></h1></div>
             <div class="body pad">
               <div class="writable-row"><span class="lbl">{{ $t('overall.credit') }}</span><span class="line grow center">{{ creditRatingValue }}</span></div>
-              <div class="writable-row"><span class="lbl">{{ $t('overall.cash') }}</span><span class="line grow center">{{ currency.symbol }}{{ cashInfo.amount }}</span></div>
+              <div class="writable-row"><span class="lbl">{{ $t('overall.cash') }}</span><span class="line grow center">{{ fmtMoney(cashInfo.amount) }}</span></div>
               <div class="writable-row"><span class="lbl">{{ $t('overall.spending') }}</span><span class="line grow center">{{ $dn(livingStandard.name) }}</span></div>
               <div class="area"><span class="area-label">{{ $t('overall.assets') }}</span><div class="area-text">{{ assetText }}</div></div>
             </div>
@@ -408,6 +415,7 @@ async function doShare() {
           <section class="paper-section mythos">
             <div class="header"><h1 class="heading"><span class="title">{{ $t('overall.mythos') }}</span><span class="subtitle">{{ $t('overall.mythosSub') }}</span></h1></div>
             <div class="body pad">
+              <div class="writable-row"><span class="lbl">{{ $t('overall.sanMaxR') }}</span><span class="line grow center">{{ derived.sanMax }}</span></div>
               <div class="area"><span class="area-label">{{ $t('overall.tomes') }}</span><div class="area-text">{{ mythosItemText }}</div></div>
               <div class="area"><span class="area-label">{{ $t('overall.spells') }}</span><div class="area-text">{{ spellText }}</div></div>
               <div class="area"><span class="area-label">{{ $t('overall.encounters') }}</span><div class="area-text">{{ contactText }}</div></div>
@@ -448,7 +456,7 @@ async function doShare() {
   margin: 0 auto 24px;
   background: var(--p-white);
   color: var(--p-black);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Microsoft Yahei", "Segoe UI", sans-serif;
+  font-family: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, "STSong", "SimSun", "Microsoft YaHei", serif;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }

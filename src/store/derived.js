@@ -9,7 +9,7 @@ import { character, saveCharacter } from './character.js';
 import { skillValue, skillBase, isOccupationSkill, splitSkillKey, getAllocation } from './skills.js';
 import {
   ATTR_KEYS, computeDerived, modifyAttributesByAge,
-  getLivingStandard, getCash, getCurrency,
+  getLivingStandard, getCash, getCurrency, CURRENCIES,
 } from '../data/rules.js';
 import { eraDiceTables, eraCreditDefs } from '../data/eras.js';
 import { getPackage } from '../data/packages.js';
@@ -54,6 +54,8 @@ export const derived = computed(() => {
     hp: over.hp != null ? over.hp : base.hp,
     mp: over.mp != null ? over.mp : base.mp,
     san: over.san != null ? over.san : Math.max(0, base.san - sanReduce),
+    // 修订版卡面栏位：初始值（开始时等于意志，经验包理智损耗不改初始值）
+    sanStart: base.san,
     luc: over.luc != null ? over.luc : a.luc,
   };
 });
@@ -105,8 +107,23 @@ export const creditRatingValue = computed(() => {
   return 0;
 });
 export const livingStandard = computed(() => getLivingStandard(creditRatingValue.value));
-export const cashInfo = computed(() => getCash(creditRatingValue.value, character.country, character.era));
-export const currency = computed(() => getCurrency(character.country, character.era));
+// 货币：默认按国籍/时代自动判定，玩家可在「物品与资产」步骤手动覆盖（如中国背景用元）
+export const currency = computed(() => {
+  const ov = character.currencyOverride;
+  if (ov && CURRENCIES[ov]) return CURRENCIES[ov];
+  return getCurrency(character.country, character.era);
+});
+export const cashInfo = computed(() => {
+  const cur = currency.value;
+  const base = (creditRatingValue.value || 0) * 10;
+  return { amount: Math.round(base * cur.rate), currency: cur };
+});
+// 金额格式化：符号型货币（$/£/¥）前置，文字型货币（元/银元）后置
+export function fmtMoney(amount, cur) {
+  const c = cur || currency.value;
+  if (amount == null || amount === '' || !c) return '';
+  return c.suffix ? `${amount} ${c.symbol}` : `${c.symbol}${amount}`;
+}
 
 // 当前时代的信用评级特殊定义（无特殊定义的时代返回 null，沿用标准规则）
 // 有定义的时代在「物品与装备」步骤替换原本的现金/消费水平展示

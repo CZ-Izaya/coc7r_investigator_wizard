@@ -137,7 +137,7 @@ function goHome() {
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-icon { font-size: 1.6rem; color: var(--gold); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
-.brand-title { font-family: Georgia, serif; font-size: 1.15rem; color: var(--text); letter-spacing: 0.08em; }
+.brand-title { font-family: Georgia, "Songti SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Microsoft YaHei", serif; font-size: 1.15rem; color: var(--text); letter-spacing: 0.08em; }
 .brand-sub { font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.18em; }
 .spacer { flex: 1; }
 .lang-select {

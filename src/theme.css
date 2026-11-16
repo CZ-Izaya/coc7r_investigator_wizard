@@ -84,11 +84,12 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); background-clip: content-box; }
 
 /* ---- 排版 ---- */
-h1, h2, h3, h4 { font-family: Georgia, "Times New Roman", "STSong", "SimSun", serif; letter-spacing: 0.02em; margin: 0; }
+/* 中文字体回退栈：与 body 保持一致，避免中文落入默认宋体与界面其他文字不一致 */
+h1, h2, h3, h4 { font-family: Georgia, "Songti SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Microsoft YaHei", serif; letter-spacing: 0.02em; margin: 0; }
 h1 { font-size: 1.9rem; }
 h2 { font-size: 1.35rem; }
 h3 { font-size: 1.08rem; }
-.serif { font-family: Georgia, "Times New Roman", "STSong", serif; }
+.serif { font-family: Georgia, "Songti SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Microsoft YaHei", serif; }
 .dim { color: var(--text-dim); }
 .faint { color: var(--text-faint); }
 .gold { color: var(--gold); }
@@ -280,7 +281,7 @@ html.light .step-link.active { color: var(--accent-strong); }
 .spacer { flex: 1; }
 
 /* 属性标签 */
-.attr-name { font-family: Georgia, serif; letter-spacing: 0.03em; }
+.attr-name { font-family: Georgia, "Songti SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Microsoft YaHei", serif; letter-spacing: 0.03em; }
 
 /* 通用输入（带标签） */
 input.inp, select.inp, textarea.inp {

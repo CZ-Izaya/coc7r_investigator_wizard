@@ -205,9 +205,9 @@ export function getLivingStandard(cr) {
 // 货币体系
 export const CURRENCIES = {
   USD: { symbol: '$', name: '美元', rate: 1 },
-  CNY: { symbol: '¥', name: '人民币', rate: 7.2 },
+  CNY: { symbol: '元', name: '人民币', rate: 7.2, suffix: true }, // 中国背景团：显示为「720 元」
   JPY: { symbol: '¥', name: '日元', rate: 150 },
-  SILVER: { symbol: '银元', name: '银元/大洋', rate: 1 },
+  SILVER: { symbol: '银元', name: '银元/大洋', rate: 1, suffix: true },
   GBP: { symbol: '£', name: '英镑', rate: 5 },          // 克苏鲁煤气灯：1英镑=5美元
   BARTER: { symbol: '以物易物', name: '以物易物', rate: 1 }, // 不败/黑暗/冰岛：无货币，物物交换
 };

@@ -123,12 +123,11 @@ export function fromSaiko(data) {
   // 武器
   char.weapons = (pc.weapons || []).map((w) => ({ ...w }));
 
-  // 背景
+  // 背景（saiko 旧格式键映射到修订版八项：belief≈个性，IPerson/IPlace 合并为重要之人与地点，mad≈恐惧）
   const st = pc.stories || {};
   char.background = {
-    app: st.app || '', belief: st.belief || '', importantPerson: st.IPerson || '',
-    place: st.IPlace || '', item: st.IItem || '', trait: st.trait || '',
-    scar: st.scar || '', mad: st.mad || '', desc: st.desc || '',
+    app: st.app || '', personality: st.belief || '', personPlace: [st.IPerson, st.IPlace].filter(Boolean).join('\n'),
+    item: st.IItem || '', scar: st.scar || '', fear: st.mad || '', desc: st.desc || '',
   };
 
   // 资产/物品/神话
@@ -204,10 +203,10 @@ export function toSaiko() {
     skillPoints,
     weapons: (char.weapons || []).map((w) => ({ ...w })),
     stories: {
-      app: char.background?.app || '', belief: char.background?.belief || '',
-      IPerson: char.background?.importantPerson || '', IPlace: char.background?.place || '',
-      IItem: char.background?.item || '', trait: char.background?.trait || '',
-      scar: char.background?.scar || '', mad: char.background?.mad || '',
+      app: char.background?.app || '', belief: char.background?.personality || '',
+      IPerson: char.background?.personPlace || '', IPlace: '',
+      IItem: char.background?.item || '', trait: '',
+      scar: char.background?.scar || '', mad: char.background?.fear || '',
       desc: char.background?.desc || '',
     },
     assets: {

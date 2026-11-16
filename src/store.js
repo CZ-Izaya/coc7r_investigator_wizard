@@ -42,6 +42,6 @@ export {
 export {
   effectiveAttr, effectiveAttributes, skillBaseOf, derived,
   currentPackage, packageAdjust, packageSanLoss, packageSanReduction,
-  creditRatingValue, livingStandard, cashInfo, currency, eraCredit,
+  creditRatingValue, livingStandard, cashInfo, currency, fmtMoney, eraCredit,
   dynamicBase, attributesComplete, eraInfo, applyAgeAdjustment,
 } from './store/derived.js';

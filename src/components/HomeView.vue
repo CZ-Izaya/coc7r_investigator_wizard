@@ -453,6 +453,10 @@ function doImport() {
               <span class="about-val">Master Noah · <a href="https://noahbox.github.io" target="_blank" rel="noopener">https://noahbox.github.io</a></span>
             </div>
             <div class="about-row">
+              <span class="about-key">{{ $t('home.aboutRevision') }}</span>
+              <span class="about-val">CZ-Izaya · <a href="https://github.com/CZ-Izaya/coc7r_investigator_wizard" target="_blank" rel="noopener">coc7r 分支</a> · 新修订第七版规则适配（480 点属性购点、说服统一、安抚与宗教技能、自建职业固定 300 点等）</span>
+            </div>
+            <div class="about-row">
               <span class="about-key">{{ $t('home.aboutAck') }}</span>
               <span class="about-val">TRPG赛高、Dhole's House</span>
             </div>
@@ -464,6 +468,13 @@ function doImport() {
           <!-- 更新历史 -->
           <div v-show="aboutTab === 'history'" class="about-history">
             <div class="changelog">
+              <h4>v1.1.0 · 26-11-16</h4>
+              <ul class="cl">
+                <li><b>规则适配</b>：CZ-Izaya 依「新修订第七版」改造 —— 属性 480 点自由分配、MOV 7 起、兴趣点＝教育＋智力、说服统一（魅惑／话术／恐吓并入）、新增安抚与宗教技能、冲锋枪技能取消（相关武器改用手枪）、自建职业固定 300 点模式</li>
+                <li><b>增加功能</b>：资产货币可手动选择（人民币元／美元／日元／英镑／银元），中国背景默认显示元；总览精神状态栏换用重审理智章节新术语（惊骇／余悸／异变／迷失），理智栏改为 初始值／当前值／异变阈值（＝意志÷5），理智上限移入神话区，生命／魔法同样改为 初始值／当前值</li>
+                <li><b>规则适配</b>：背景故事改为修订版八项（外貌描述／个性／重要之人与地点／特殊物品＋伤势与疤痕／恐惧），掷骰表按新书重建（个性＝特质＋缺点各 1D10），旧存档自动迁移</li>
+                <li><b>体验优化</b>：界面换装与守秘人 handout 同源的浅色主题；品牌、属性、衍生属性与总览表格的中文统一宋体衬线字体</li>
+              </ul>
               <h4>v1.0.8 · 26-08-23</h4>
               <ul class="cl">
                 <li><b>增加功能</b>：支持导入 Dhole's House 的角色卡 Json 文件</li>

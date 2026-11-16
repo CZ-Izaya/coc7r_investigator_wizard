@@ -274,15 +274,16 @@ export function toDhole(portraitB64) {
   };
 
   // 背景故事（键名需匹配导入器的 getBackstory；伤痕键为 injurues 拼写）
+  // 修订版八项：个性（≈ideology/traits 合并）、重要之人与地点（≈people/locations 合并）、恐惧（≈phobias）
   const bg = character.background || {};
   const backstory = {
     description: bg.desc || null,
-    ideology: bg.belief || null,
-    traits: bg.trait || null,
+    ideology: bg.personality || null,
+    traits: null,
     injurues: bg.scar || null,
-    people: bg.importantPerson || null,
-    phobias: bg.mad || null,
-    locations: bg.place || null,
+    people: bg.personPlace || null,
+    phobias: bg.fear || null,
+    locations: null,
     tomes: listText(character.mythosItems) || null,
     possessions: listText(character.items) || null,
     encounters: listText(character.contacts) || null,
@@ -556,8 +557,9 @@ export function fromDhole(data) {
     ? String(s).split(',').map((t) => t.trim()).filter(Boolean).map((n) => ({ name: n }))
     : []);
   char.background = {
-    app: '', belief: str(bg.ideology), importantPerson: str(bg.people), place: str(bg.locations),
-    item: '', trait: str(bg.traits), scar: str(bg.injurues), mad: str(bg.phobias), desc: str(bg.description),
+    app: '', personality: [str(bg.ideology), str(bg.traits)].filter(Boolean).join('\n'),
+    personPlace: [str(bg.people), str(bg.locations)].filter(Boolean).join('\n'),
+    item: '', scar: str(bg.injurues), fear: str(bg.phobias), desc: str(bg.description),
   };
   char.items = splitRows(bg.possessions);
   char.mythosItems = splitRows(bg.tomes);

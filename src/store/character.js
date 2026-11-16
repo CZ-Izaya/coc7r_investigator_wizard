@@ -25,7 +25,7 @@ export function createEmptyCharacter() {
     updatedAt: Date.now(),
     name: '', player: '', age: '', gender: '男', genderOther: '',
     avatar: '',
-    country: '美国', countryOther: '', hometown: '', residence: '', era: 'modern',
+    country: '美国', countryOther: '', hometown: '', residence: '', era: 'modern', currencyOverride: '',
     jobType: 'preset', jobName: '', customJobName: '',
     customSkills: [], customPointMode: 'fixed', customPointAttr1: 'edu', customPointAttr2: 'edu', customWealth: [9, 30],
     ageModifier: true,
@@ -55,7 +55,8 @@ export function createEmptyCharacter() {
     eraFaction: '',
     // 时代掷骰表结果：{ [eraId]: { dice, entry } } —— 当前时代的出生预兆/大事记修正
     eraEffects: {},
-    background: { app: '', belief: '', importantPerson: '', place: '', item: '', trait: '', scar: '', mad: '', desc: '' },
+    // 修订版八项背景要素：前四项车卡时填写，后四项（伤疤/恐惧/法术典籍/遭遇）由神话与遭遇模块记录
+    background: { app: '', personality: '', personPlace: '', item: '', scar: '', fear: '', desc: '' },
     items: [{ name: '' }, { name: '' }, { name: '' }],
     assetsRows: [{ name: '' }, { name: '' }, { name: '' }],
     mythosItems: [{ name: '' }, { name: '' }, { name: '' }],
@@ -74,6 +75,22 @@ export function normalize(data) {
   const fresh = createEmptyCharacter();
   const merged = { ...fresh, ...data };
   merged.background = { ...fresh.background, ...(data?.background || {}) };
+  // 旧版背景字段迁移：思想信念+特质 → 个性；重要之人+意义非凡之地 → 重要之人与地点；精神症状 → 恐惧
+  {
+    const old = data?.background || {};
+    if (!merged.background.personality) {
+      merged.background.personality = [old.belief, old.trait].filter(Boolean).join('\n');
+    }
+    if (!merged.background.personPlace) {
+      merged.background.personPlace = [old.importantPerson, old.place].filter(Boolean).join('\n');
+    }
+    if (!merged.background.fear) merged.background.fear = old.mad || '';
+    delete merged.background.belief;
+    delete merged.background.trait;
+    delete merged.background.importantPerson;
+    delete merged.background.place;
+    delete merged.background.mad;
+  }
   merged.derivedOverrides = { ...fresh.derivedOverrides, ...(data?.derivedOverrides || {}) };
   merged.attributes = { ...fresh.attributes, ...(data?.attributes || {}) };
   merged.allocations = data?.allocations || {};
