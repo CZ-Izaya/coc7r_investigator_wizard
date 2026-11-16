@@ -254,6 +254,15 @@ function removeAvatar() {
             <div>
               <label class="lbl">{{ $t('basic.pointFormulaLabel') }}</label>
               <div class="point-formula">
+                <span class="seg-item" :class="{ active: character.customPointMode !== 'classic' }" @click="character.customPointMode = 'fixed'; saveCharacter()">{{ $t('basic.customPointFixed') }}</span>
+                <span class="seg-item" :class="{ active: character.customPointMode === 'classic' }" @click="character.customPointMode = 'classic'; saveCharacter()">{{ $t('basic.customPointClassic') }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="character.customPointMode === 'classic'" class="grid-2 mt-8">
+            <div>
+              <label class="lbl">{{ $t('basic.pointFormulaLabel') }}</label>
+              <div class="point-formula">
                 <select class="inp" v-model="character.customPointAttr1" @change="saveCharacter">
                   <option v-for="k in ATTR_KEYS" :key="k" :value="k">{{ $dn(ATTR_LABELS[k]) }}</option>
                 </select>
@@ -277,6 +286,7 @@ function removeAvatar() {
             </div>
           </div>
           <p class="hint mt-8">{{ $t('basic.customSkillHint') }}</p>
+          <p v-if="character.customPointMode !== 'classic'" class="hint mt-8">{{ $t('basic.customPointFixedHint') }}</p>
         </template>
         </template>
       </div>

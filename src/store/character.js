@@ -27,11 +27,11 @@ export function createEmptyCharacter() {
     avatar: '',
     country: '美国', countryOther: '', hometown: '', residence: '', era: 'modern',
     jobType: 'preset', jobName: '', customJobName: '',
-    customSkills: [], customPointAttr1: 'edu', customPointAttr2: 'edu', customWealth: [9, 30],
+    customSkills: [], customPointMode: 'fixed', customPointAttr1: 'edu', customPointAttr2: 'edu', customWealth: [9, 30],
     ageModifier: true,
     packageEnabled: false, packageId: null,
     packageSkillPoints: {}, packageRolls: {}, believer: false, packageAttrBonus: {},
-    attrMethod: 'pointbuy', pointTotal: 460,
+    attrMethod: 'pointbuy', pointTotal: 480,
     attributes: emptyAttributes(),
     attrPool: [],
     ageAdjusted: false, ageSummary: [], preAgeAttributes: null,
@@ -80,6 +80,7 @@ export function normalize(data) {
   merged.groupedOrder = data?.groupedOrder || {};
   merged.packageSkillPoints = data?.packageSkillPoints || {};
   merged.customSkills = data?.customSkills || [];
+  merged.customPointMode = data?.customPointMode === 'classic' ? 'classic' : 'fixed';
   merged.weapons = data?.weapons || [];
   merged.items = data?.items || [];
   merged.assetsRows = data?.assetsRows || [];
@@ -97,7 +98,7 @@ export function normalize(data) {
 // ---- 主题 ----
 const THEME_KEY = 'coc-wizard-theme';
 export const theme = reactive({
-  dark: localStorage.getItem(THEME_KEY) !== 'light',
+  dark: localStorage.getItem(THEME_KEY) === 'dark',
 });
 export function toggleTheme() {
   theme.dark = !theme.dark;

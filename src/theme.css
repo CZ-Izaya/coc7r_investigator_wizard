@@ -32,27 +32,30 @@
 }
 
 html.light {
-  --bg: #ece3cd;
-  --bg-grad: radial-gradient(1200px 800px at 15% -10%, #f3ead5 0%, #e6dcc2 55%);
-  --surface: #f8f1de;
-  --surface-2: #f1e8d2;
-  --surface-3: #e9dfc5;
-  --border: #d3c5a4;
-  --border-strong: #b8a87f;
-  --text: #2c2a24;
-  --text-dim: #6d6959;
-  --text-faint: #9a9178;
-  --accent: #1e6f50;
-  --accent-strong: #15543c;
-  --accent-dim: #cfe4d6;
-  --gold: #9a6d1e;
-  --danger: #c0392b;
-  --danger-bg: rgba(192, 57, 43, 0.1);
-  --link: #15543c;
-  --shadow: 0 2px 6px rgba(90, 70, 40, 0.16), 0 8px 22px rgba(90, 70, 40, 0.12);
-  --shadow-lg: 0 6px 16px rgba(90, 70, 40, 0.2), 0 20px 44px rgba(90, 70, 40, 0.16);
-  --ink: #2c2a24;
-  --paper: #f8f1de;
+  /* 修订版向导 · 与《欲望之箱》系列文档同源的纸张配色 */
+  --bg: #f3efe4;
+  --bg-grad: radial-gradient(1200px 600px at 15% -10%, #fffdf6 0%, rgba(255,253,246,0) 60%), radial-gradient(900px 500px at 100% 0%, #f6f1e3 0%, rgba(246,241,227,0) 55%);
+  --surface: #fffdf7;
+  --surface-2: #fbf8f0;
+  --surface-3: #f2ede0;
+  --border: #d9d0be;
+  --border-strong: #c4b89e;
+  --text: #1a1713;
+  --text-dim: #413a30;
+  --text-faint: #827868;
+  --accent: #3d5b46;
+  --accent-strong: #2c4434;
+  --accent-dim: #e2ebdf;
+  --gold: #8a6524;
+  --danger: #9c3126;
+  --danger-bg: rgba(156, 49, 38, 0.1);
+  --link: #2f4a63;
+  --shadow: 0 1px 0 rgba(26, 23, 19, 0.06), 0 8px 24px -18px rgba(26, 23, 19, 0.5);
+  --shadow-lg: 0 1px 0 rgba(26, 23, 19, 0.06), 0 16px 40px -24px rgba(26, 23, 19, 0.55);
+  --radius: 4px;
+  --radius-sm: 2px;
+  --ink: #1a1713;
+  --paper: #fffdf7;
   --scrollbar: #cbbd9c;
 }
 
@@ -63,9 +66,9 @@ body {
   background-image: var(--bg-grad);
   background-attachment: fixed;
   color: var(--text);
-  font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-  font-size: 15px;
-  line-height: 1.6;
+  font-family: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, "STSong", "SimSun", "Microsoft YaHei", serif;
+  font-size: 15.5px;
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
   transition: background 0.3s ease, color 0.3s ease;
   min-height: 100vh;
@@ -120,7 +123,7 @@ h3 { font-size: 1.08rem; }
   background: var(--surface-2);
   color: var(--text);
   font: inherit; font-size: 0.92rem; font-weight: 500;
-  padding: 8px 16px; border-radius: 20px; cursor: pointer;
+  padding: 8px 16px; border-radius: var(--radius); cursor: pointer;
   transition: transform 0.06s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
   box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   user-select: none;
@@ -135,9 +138,9 @@ html.light .btn.primary { color: #fff; background: var(--accent); }
 .btn.ghost:hover { background: var(--surface-2); }
 .btn.danger { border-color: var(--danger); color: var(--danger); background: transparent; }
 .btn.danger:hover { background: var(--danger-bg); }
-.btn.sm { padding: 4px 11px; font-size: 0.8rem; border-radius: 15px; }
+.btn.sm { padding: 4px 11px; font-size: 0.8rem; border-radius: var(--radius-sm); }
 .btn.block { width: 100%; }
-.btn.big { padding: 13px 22px; font-size: 1.02rem; border-radius: 24px; }
+.btn.big { padding: 13px 22px; font-size: 1.02rem; border-radius: var(--radius); }
 
 /* 水波涟漪 */
 .btn::after {
@@ -295,7 +298,7 @@ textarea.inp { min-height: 72px; resize: vertical; }
 /* 单选按钮组 */
 .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .seg-item {
-  padding: 7px 14px; border-radius: 18px; border: 1px solid var(--border-strong);
+  padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong);
   background: var(--surface-2); color: var(--text-dim); cursor: pointer; font-size: 0.88rem;
   transition: all 0.15s; user-select: none;
 }

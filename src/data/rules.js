@@ -42,8 +42,9 @@ export function generateRandomAttributes() {
 // 快速开始规则：将这 8 个数值分配到任意属性
 export const QUICK_START_VALUES = [40, 50, 50, 50, 60, 60, 70, 80];
 
-// 购点默认
-export const POINT_BUY_DEFAULT = 460;
+// 购点默认（修订版守秘人伴侣：480 点分配，单项上限 90，建议下限 30）
+export const POINT_BUY_DEFAULT = 480;
+export const POINT_BUY_MIN_RECOMMENDED = 30;
 export const ATTR_MIN = 15;
 export const ATTR_MAX = 90;
 
@@ -138,12 +139,12 @@ export function getDBBuild(str, siz) {
   return { db: '+5D6', build: 6 };
 }
 
-// 移动力（基础 7/8/9，再按年龄扣减）
+// 移动率（修订版守秘人伴侣：所有人类初始移动率 7；力量大于体型 +1；敏捷大于体型 +1；再按年龄扣减）
 export function getMovement(str, siz, dex, age) {
-  let mov = 8;
+  let mov = 7;
   if (str && siz && dex) {
-    if (str < siz && dex < siz) mov = 7;
-    else if (str >= siz && dex >= siz) mov = 9;
+    if (str > siz) mov += 1;
+    if (dex > siz) mov += 1;
   }
   const a = parseInt(age, 10);
   if (a >= 40 && a < 50) mov -= 1;
@@ -168,6 +169,8 @@ export function computeDerived(attributes, age) {
 // 职业技能点数（依据职业 point 公式）
 export function computeProSkillPoints(job, attributes) {
   if (!job) return 0;
+  // 修订版「创建新职业」：固定 300 点加在基础值上（fixed: 300）
+  if (job.fixedPoints != null) return job.fixedPoints;
   let total = 0;
   job.point.forEach((unitGroup) => {
     // unitGroup 是 [[]]，取第一个满足条件的 unit
@@ -181,7 +184,8 @@ export function computeProSkillPoints(job, attributes) {
 }
 
 export function computeInterestSkillPoints(attributes) {
-  return (attributes.int || 0) * 2;
+  // 修订版守秘人伴侣：个人兴趣点 = 教育 + 智力（未分配即作废，克苏鲁神话除外）
+  return (attributes.edu || 0) + (attributes.int || 0);
 }
 
 // ---- 生活水平 / 现金 ----

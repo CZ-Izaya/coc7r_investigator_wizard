@@ -25,6 +25,8 @@ export function skillBase(key, attributes) {
   const { name, child } = splitSkillKey(key);
   if (name === '母语') return attributes.edu || 0;
   if (name === '闪避') return Math.floor((attributes.dex || 0) / 2);
+  // 修订版新增：安抚基础值＝外貌／5
+  if (name === '安抚') return Math.floor((attributes.app || 0) / 5);
   // 时代技能动态基础值（神秘冰岛/幻梦境）
   if (name === '本地知识') return Math.floor((attributes.int || 0) / 2);
   if (name === '造梦') return Math.floor((attributes.pow || 0) / 5);
@@ -59,13 +61,17 @@ export const totalProPoints = computed(() => {
   if (character.era === 'iceland') {
     return effectiveAttr('edu') * 4 + effectiveAttr('int') * 2;
   }
-  if (character.jobType === 'preset' && currentJob.value) {
-    return computeProSkillPoints(currentJob.value, effectiveAttributes.value);
+  if (character.jobType === 'preset') {
+    // 未选择职业时不提供职业技能点
+    return currentJob.value ? computeProSkillPoints(currentJob.value, effectiveAttributes.value) : 0;
   }
-  // 自定义职业：两个属性各 ×2 相加
-  const a1 = character.customPointAttr1 || 'edu';
-  const a2 = character.customPointAttr2 || 'edu';
-  return effectiveAttr(a1) * 2 + effectiveAttr(a2) * 2;
+  // 自定义职业：修订版「创建新职业」固定 300 点（加在基础值上），可切回经典两属性×2公式
+  if (character.customPointMode === 'classic') {
+    const a1 = character.customPointAttr1 || 'edu';
+    const a2 = character.customPointAttr2 || 'edu';
+    return effectiveAttr(a1) * 2 + effectiveAttr(a2) * 2;
+  }
+  return 300;
 });
 export const totalInterestPoints = computed(() => {
   // 神秘冰岛：业余技能点禁用（全部点数已并入职业技能的自由分配 EDU×4+INT×2）
