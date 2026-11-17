@@ -124,6 +124,53 @@ export function copySt() {
   return st;
 }
 
+// ---- html2canvas 兼容修补 ----
+// html2canvas 1.4.1 渲染 linear-gradient 背景时，会按元素的浮点尺寸新建离屏 canvas：
+//   canvas.width = width;  // 0.59 → 0，赋值即取整
+//   if (width > 0 && height > 0) pattern = ctx.createPattern(canvas, 'repeat');  // 守卫仍按 0.59 放行
+// 于是宽或高不足 1px 的元素（1px 分隔线被布局压缩、页面缩放、不同字号组合都会出现）
+// 会让 createPattern 抛 InvalidStateError，整次导出失败。
+// 这里把退化尺寸的图案换成 1×1 透明画布：该元素本身不足 1px，视觉上没有区别。
+let patternGuardInstalled = false;
+function installPatternGuard() {
+  if (patternGuardInstalled) return;
+  const proto = typeof CanvasRenderingContext2D !== 'undefined' && CanvasRenderingContext2D.prototype;
+  if (!proto || typeof proto.createPattern !== 'function') return;
+  const orig = proto.createPattern;
+  const blank = document.createElement('canvas');
+  blank.width = 1;
+  blank.height = 1;
+  proto.createPattern = function (image, repeat) {
+    const w = image && image.width;
+    const h = image && image.height;
+    if (typeof w === 'number' && typeof h === 'number' && (!isFinite(w) || !isFinite(h) || w < 1 || h < 1)) {
+      return orig.call(this, blank, repeat);
+    }
+    return orig.call(this, image, repeat);
+  };
+  patternGuardInstalled = true;
+}
+
+// 统一渲染入口：正常路径失败且属于 createPattern 退化异常时，
+// 去掉克隆树的背景图重试一次（卡片底色是白纸，只丢渐变装饰），保证至少能出文件。
+async function capture(el, options) {
+  installPatternGuard();
+  try {
+    return await html2canvas(el, options);
+  } catch (e) {
+    const msg = String((e && e.message) || e);
+    if (!/createPattern|width or height of 0/i.test(msg)) throw e;
+    return await html2canvas(el, {
+      ...options,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = '*,*::before,*::after{background-image:none!important}';
+        doc.head.appendChild(style);
+      },
+    });
+  }
+}
+
 // ---- 图片 / PDF ----
 // 微信等内嵌浏览器不执行 a.download，导出前先识别环境
 export function isEmbeddedBrowser() {
@@ -152,7 +199,7 @@ function canvasToBlob(canvas) {
 }
 
 export async function exportImage(el, name) {
-  const canvas = await html2canvas(el, {
+  const canvas = await capture(el, {
     scale: 2,
     useCORS: true,
     backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#161d18',
@@ -166,7 +213,7 @@ export async function exportImage(el, name) {
 }
 
 export async function exportPDF(el, name) {
-  const canvas = await html2canvas(el, {
+  const canvas = await capture(el, {
     scale: 2,
     useCORS: true,
     backgroundColor: '#ffffff',
@@ -197,7 +244,7 @@ export async function exportPDFPages(elements, name) {
   const pageH = pdf.internal.pageSize.getHeight();
   for (let i = 0; i < elements.length; i++) {
     if (!elements[i]) continue;
-    const canvas = await html2canvas(elements[i], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const canvas = await capture(elements[i], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
     const imgData = canvas.toDataURL('image/png');
     // 纸张比例即 A4，直接铺满一页
     const ratio = pageW / canvas.width;
@@ -220,7 +267,7 @@ export async function exportPDFPages(elements, name) {
 export async function exportImages(elements, name) {
   for (let i = 0; i < elements.length; i++) {
     if (!elements[i]) continue;
-    const canvas = await html2canvas(elements[i], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const canvas = await capture(elements[i], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
     const suffix = elements.length > 1 ? `-${i + 1}` : '';
     const blob = await canvasToBlob(canvas);
     if (blob) {

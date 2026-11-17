@@ -468,6 +468,10 @@ function doImport() {
           <!-- 更新历史 -->
           <div v-show="aboutTab === 'history'" class="about-history">
             <div class="changelog">
+              <h4>v1.1.2 · 26-11-17</h4>
+              <ul class="cl">
+                <li><b>Bug 修复</b>：修复部分卡片导出图片／PDF 时报 <code>createPattern … width or height of 0</code> 的问题 —— html2canvas 渲染渐变分隔线时按浮点尺寸建离屏画布，尺寸不足 1px 的元素（内容长度不同导致的分隔线压缩）会取整为 0 并中断整次导出</li>
+              </ul>
               <h4>v1.1.1 · 26-11-17</h4>
               <ul class="cl">
                 <li><b>Bug 修复</b>：图片／PDF 导出改用 Blob URL 下载，修复部分环境（尤其移动端与内嵌浏览器）点击导出无反应、不出文件的问题</li>

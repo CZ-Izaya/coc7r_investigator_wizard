@@ -61,3 +61,4 @@ npm run build    # 构建单文件 HTML → dist/index.html
 
 - v1.1.0：理智三栏与异变阈值、修订版术语、背景故事八项重建、货币切换、衬线排版
 - v1.1.1：图片／PDF 导出改用 Blob URL 下载（修复部分移动端无反应）；导出失败会在按钮旁显示原因；识别微信等内嵌浏览器并给出提示
+- v1.1.2：修复导出时的 `createPattern … width or height of 0` 崩溃（less-than-1px 渐变元素导致离屏画布尺寸为 0），并对同一异常加了一层去背景重试兜底
