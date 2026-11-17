@@ -275,6 +275,8 @@ export default {
     image: '画像', pdf: 'PDF', json: 'JSON', st: 'ダイスボット', saiko: 'TRPG Saiko', fvtt: 'FVTT', dhole: 'Dhole', share: '共有リンク',
     shareTitle: 'キャラクターデータ付き共有リンクを生成（アバターなし）。受け取った側は直接インポートできます',
     busyImage: '画像を生成中…', busyPdf: 'PDF を生成中…',
+    exportFail: 'エクスポートに失敗：',
+    embeddedHint: 'ファイルは生成されましたが、WeChat などの内蔵ブラウザではダウンロードが表示されません。通常のブラウザで開くか、JSON エクスポートをご利用ください',
     copiedSaiko: 'Saiko Base64 をコピーしました', copiedFvtt: 'FVTT キャラクター JSON をコピーしました', copiedDhole: 'Dhole キャラクター JSON をコピーしました', copiedShare: '共有リンクをコピーしました',
     inv: '探索者', invSub: 'Investigator',
     name: '名前', player: 'プレイヤー', era: '時代', faction: '派閥', job: '職業', gender: '性別',

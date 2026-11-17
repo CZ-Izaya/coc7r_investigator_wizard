@@ -125,15 +125,42 @@ export function copySt() {
 }
 
 // ---- 图片 / PDF ----
+// 微信等内嵌浏览器不执行 a.download，导出前先识别环境
+export function isEmbeddedBrowser() {
+  try { return /MicroMessenger|QQ\/|FB_IAB|Line\//i.test(navigator.userAgent); } catch (e) { return false; }
+}
+
+// 通用下载触发：Blob URL 的兼容性远好于 data URL（后者在移动端常被静默吞掉）
+export function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  // 延迟回收，给慢速浏览器留足落盘时间
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  return url;
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve) => {
+    if (canvas.toBlob) canvas.toBlob((b) => resolve(b), 'image/png');
+    else resolve(null);
+  });
+}
+
 export async function exportImage(el, name) {
   const canvas = await html2canvas(el, {
     scale: 2,
     useCORS: true,
     backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#161d18',
   });
-  const url = canvas.toDataURL('image/png');
+  const blob = await canvasToBlob(canvas);
+  if (blob) return triggerDownload(blob, `${name || 'investigator'}.png`);
   const a = document.createElement('a');
-  a.href = url;
+  a.href = canvas.toDataURL('image/png');
   a.download = `${name || 'investigator'}.png`;
   a.click();
 }
@@ -184,6 +211,8 @@ export async function exportPDFPages(elements, name) {
     }
     if (i < elements.length - 1) pdf.addPage();
   }
+  const blob = pdf.output('blob');
+  if (blob) return triggerDownload(blob, `${name || 'investigator'}.pdf`);
   pdf.save(`${name || 'investigator'}.pdf`);
 }
 
@@ -192,12 +221,16 @@ export async function exportImages(elements, name) {
   for (let i = 0; i < elements.length; i++) {
     if (!elements[i]) continue;
     const canvas = await html2canvas(elements[i], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-    const url = canvas.toDataURL('image/png');
     const suffix = elements.length > 1 ? `-${i + 1}` : '';
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${name || 'investigator'}${suffix}.png`;
-    a.click();
+    const blob = await canvasToBlob(canvas);
+    if (blob) {
+      triggerDownload(blob, `${name || 'investigator'}${suffix}.png`);
+    } else {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `${name || 'investigator'}${suffix}.png`;
+      a.click();
+    }
     await new Promise((r) => setTimeout(r, 150));
   }
 }

@@ -275,6 +275,8 @@ export default {
     image: 'Image', pdf: 'PDF', json: 'JSON', st: 'Dice bot', saiko: 'TRPG Saiko', fvtt: 'FVTT', dhole: 'Dhole', share: 'Share link',
     shareTitle: 'Generate a share link with the character data (no avatar); recipients can import it directly',
     busyImage: 'Generating image…', busyPdf: 'Generating PDF…',
+    exportFail: 'Export failed: ',
+    embeddedHint: 'File generated, but embedded browsers (e.g. WeChat) do not show downloads. Open this page in a regular browser, or use JSON export',
     copiedSaiko: 'Saiko Base64 copied', copiedFvtt: 'FVTT character JSON copied', copiedDhole: 'Dhole character JSON copied', copiedShare: 'Share link copied',
     inv: 'Investigator', invSub: 'Investigator',
     name: 'Name', player: 'Player', era: 'Era', faction: 'Faction', job: 'Occupation', gender: 'Gender',

@@ -278,6 +278,8 @@ export default {
     image: '图片', pdf: 'PDF', json: 'JSON', st: '骰娘设定', saiko: 'TRPG赛高', fvtt: 'FVTT', dhole: 'Dhole', share: '分享链接',
     shareTitle: '生成含角色数据的分享链接（不含头像），对方打开后可直接导入',
     busyImage: '正在生成图片…', busyPdf: '正在生成 PDF…',
+    exportFail: '导出失败：',
+    embeddedHint: '文件已生成，但当前在微信等内嵌浏览器里不会弹出下载，请用右上角菜单换浏览器打开后再试，或改用 JSON 导出',
     copiedSaiko: '已复制 Saiko Base64 串', copiedFvtt: '已复制 FVTT 角色 JSON', copiedDhole: '已复制 Dhole 角色 JSON', copiedShare: '已复制分享链接',
     inv: '调查员', invSub: 'Investigator',
     name: '姓名', player: '玩家', era: '时代', faction: '派系', job: '职业', gender: '性别',

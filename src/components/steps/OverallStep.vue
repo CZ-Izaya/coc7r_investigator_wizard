@@ -7,7 +7,7 @@ import {
 import { ATTR_KEYS, ATTR_LABELS, ATTR_EN } from '../../data/rules.js';
 import { skillGroups, skillGroupOrder, getSkill, getEraSkillGroups, getEraGroupOrder } from '../../data/skills.js';
 import { getEra } from '../../data/eras.js';
-import { downloadJSON, copySt, downloadSt, exportImages, exportPDFPages, downloadText } from '../../export.js';
+import { downloadJSON, copySt, downloadSt, exportImages, exportPDFPages, downloadText, isEmbeddedBrowser } from '../../export.js';
 import { exportSaikoBase64 } from '../../saiko.js';
 import { exportFVTT } from '../../fvtt.js';
 import { exportDhole } from '../../dhole.js';
@@ -122,13 +122,37 @@ const scenarioText = computed(() => (character.scenarios || []).filter(r => r.na
 
 const bg = computed(() => character.background);
 
+// busy 提示保留一段时间再消失，避免错误信息一闪而过
+let busyTimer = null;
+function holdBusy(msg, ms) {
+  busy.value = msg;
+  clearTimeout(busyTimer);
+  busyTimer = setTimeout(() => { busy.value = ''; }, ms);
+}
+function errText(e) {
+  const msg = (e && (e.message || e.reason)) || String(e);
+  return typeof msg === 'string' ? msg : JSON.stringify(msg);
+}
+
 async function doImage() {
   busy.value = t('overall.busyImage');
-  try { await exportImages([frontRef.value, backRef.value], character.name || 'investigator'); } finally { busy.value = ''; }
+  try {
+    await exportImages([frontRef.value, backRef.value], character.name || 'investigator');
+    if (isEmbeddedBrowser()) holdBusy(t('overall.embeddedHint'), 10000);
+    else busy.value = '';
+  } catch (e) {
+    holdBusy(t('overall.exportFail') + errText(e), 12000);
+  }
 }
 async function doPDF() {
   busy.value = t('overall.busyPdf');
-  try { await exportPDFPages([frontRef.value, backRef.value], character.name || 'investigator'); } finally { busy.value = ''; }
+  try {
+    await exportPDFPages([frontRef.value, backRef.value], character.name || 'investigator');
+    if (isEmbeddedBrowser()) holdBusy(t('overall.embeddedHint'), 10000);
+    else busy.value = '';
+  } catch (e) {
+    holdBusy(t('overall.exportFail') + errText(e), 12000);
+  }
 }
 function doJSON() { downloadJSON(); }
 function doSt() { copySt(); downloadSt(); }
