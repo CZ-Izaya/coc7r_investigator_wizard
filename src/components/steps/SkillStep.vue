@@ -4,7 +4,7 @@ import {
   character, saveCharacter, getAllocation, setAllocation, skillValue, skillBaseOf,
   totalProPoints, totalInterestPoints, usedProPoints, usedInterestPoints,
   occupationSkills, occupationGroupNames, isOccupationSkill, packageAdjust, splitSkillKey, makeSkillKey,
-  jobGroupHints, creditRange,
+  jobGroupHints, creditRange, baseOccupationSkills, bonusSkillCount,
 } from '../../store.js';
 import { skills, skillGroups, skillGroupOrder, getSkill, getEraSkill, groupedSkillNames, getEraSkillGroups, getEraGroupOrder } from '../../data/skills.js';
 import { t, dataName, skillLabel, skillIntroByKey } from '../../i18n.js';
@@ -143,6 +143,29 @@ function toggleCustomSkill(key) {
   }
   saveCharacter();
 }
+
+// ---- 预设职业：补充本职技能（社交技能合并为「说服」后空出的位） ----
+const bonusPickerOpen = computed(() => isPro.value && character.jobType === 'preset' && bonusSkillCount.value > 0);
+// 已在原职业模板中的技能名（含分组名），不可重复选
+const baseSkillNames = computed(() => new Set(baseOccupationSkills.value.map(k => splitSkillKey(k).name)));
+function isBonusSelected(key) { return (character.bonusSkills || []).includes(key); }
+function isBonusDisabled(key) {
+  if (key === '信用评级' || key === '克苏鲁神话') return true;
+  if (getSkill(key)?.group) return true; // 分组技能不作为补充位（其子技能由分组块自行添加）
+  return baseSkillNames.value.has(key);
+}
+function toggleBonusSkill(key) {
+  if (isBonusDisabled(key)) return;
+  if (!character.bonusSkills) character.bonusSkills = [];
+  const idx = character.bonusSkills.indexOf(key);
+  if (idx >= 0) {
+    character.bonusSkills.splice(idx, 1);
+  } else {
+    if (character.bonusSkills.length >= bonusSkillCount.value) return;
+    character.bonusSkills.push(key);
+  }
+  saveCharacter();
+}
 </script>
 
 <template>
@@ -190,6 +213,34 @@ function toggleCustomSkill(key) {
                   <span class="box">✓</span>
                   <span :class="{ faint: name === '克苏鲁神话' }" :title="skillIntro(name)">{{ showName(name) }}</span>
                   <span v-if="name === '克苏鲁神话'" class="small faint">{{ $t('skill.noSelect') }}</span>
+                </label>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- 预设职业：补充本职技能（社交技能合并为「说服」后空出的位，由玩家自选） -->
+        <div v-if="bonusPickerOpen" class="custom-picker card mt-8">
+          <div class="card-body">
+            <h3 class="mb-8">{{ $t('skill.bonusPicker') }}</h3>
+            <p class="hint mb-8">{{ $t('skill.bonusHint', { n: bonusSkillCount }) }}</p>
+            <div class="row wrap mb-8">
+              <span class="small dim">{{ $t('skill.selectedN', { n: (character.bonusSkills || []).length }) }} / {{ bonusSkillCount }}</span>
+            </div>
+            <div class="tabs">
+              <span v-for="g in groupOrder" :key="g" class="tab" :class="{ active: pickerTab === g }" @click="pickerTab = g">{{ $dn(g) }}</span>
+            </div>
+            <div class="picker-list">
+              <template v-for="name in groups[pickerTab]" :key="name">
+                <label v-if="name !== '自定义'" class="checkbox picker-item">
+                  <input
+                    type="checkbox"
+                    :checked="isBonusSelected(name)"
+                    :disabled="isBonusDisabled(name)"
+                    @change="toggleBonusSkill(name)"
+                  />
+                  <span class="box">✓</span>
+                  <span :class="{ faint: isBonusDisabled(name) }" :title="skillIntro(name)">{{ showName(name) }}</span>
                 </label>
               </template>
             </div>

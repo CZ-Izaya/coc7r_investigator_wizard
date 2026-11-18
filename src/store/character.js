@@ -42,6 +42,8 @@ export function createEmptyCharacter() {
     groupedOrder: {},
     // 本职技能解析后的选择结果 { 任选槽位 index: 选中的技能key }
     jobChoice: {},
+    // 补充本职技能（社交技能合并为「说服」后空出技能位的职业，由玩家自选补足）
+    bonusSkills: [],
     skillMode: 'strict',
     legacyMode: false,
     // 扩展书职业显示开关：键为 EXP_BOOKS，值为是否显示该来源职业（默认全部显示）
@@ -97,6 +99,7 @@ export function normalize(data) {
   merged.groupedOrder = data?.groupedOrder || {};
   merged.packageSkillPoints = data?.packageSkillPoints || {};
   merged.customSkills = data?.customSkills || [];
+  merged.bonusSkills = data?.bonusSkills || [];
   merged.customPointMode = data?.customPointMode === 'classic' ? 'classic' : 'fixed';
   merged.weapons = data?.weapons || [];
   merged.items = data?.items || [];

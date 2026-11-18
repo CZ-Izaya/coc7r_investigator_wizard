@@ -46,6 +46,18 @@ watch(() => character.era, () => {
 // 神秘冰岛：无职业模板（提示文案）
 const isIcelandFree = computed(() => character.era === 'iceland');
 
+// 切换职业：补充本职技能（bonusSkills）属于上一个职业的模板，必须清空，避免残留污染
+function onJobChange() {
+  character.bonusSkills = [];
+  saveCharacter();
+}
+function switchJobType(type) {
+  if (character.jobType === type) return;
+  character.jobType = type;
+  character.bonusSkills = [];
+  saveCharacter();
+}
+
 function showName(name) { return (name || '').replace(/Ω/g, ''); }
 
 // 格式化本职技能列表
@@ -212,8 +224,8 @@ function removeAvatar() {
         <template v-else>
         <div class="job-head">
           <div class="seg">
-            <span class="seg-item" :class="{ active: character.jobType === 'preset' }" @click="character.jobType = 'preset'; saveCharacter()">{{ $t('basic.chooseJob') }}</span>
-            <span class="seg-item" :class="{ active: character.jobType === 'custom' }" @click="character.jobType = 'custom'; saveCharacter()">{{ $t('basic.customJob') }}</span>
+            <span class="seg-item" :class="{ active: character.jobType === 'preset' }" @click="switchJobType('preset')">{{ $t('basic.chooseJob') }}</span>
+            <span class="seg-item" :class="{ active: character.jobType === 'custom' }" @click="switchJobType('custom')">{{ $t('basic.customJob') }}</span>
           </div>
           <div class="book-filters" v-if="character.jobType === 'preset'">
             <span
@@ -229,7 +241,7 @@ function removeAvatar() {
 
         <template v-if="character.jobType === 'preset'">
           <label class="lbl">{{ $t('basic.job') }}</label>
-          <select class="inp" v-model="character.jobName" @change="saveCharacter">
+          <select class="inp" v-model="character.jobName" @change="onJobChange">
             <option value="" disabled>{{ $t('basic.jobSelectPh') }}</option>
             <optgroup v-for="[group, list] in filteredJobGroups" :key="group" :label="$dn(group)">
               <option v-for="j in list" :key="j" :value="j">{{ $dnt(j) }}</option>

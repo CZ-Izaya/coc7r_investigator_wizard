@@ -121,25 +121,35 @@ export function expandSkillKey(key) {
   return [key];
 }
 
-// 最终本职技能键列表（展开分组技能后的完整列表，按键去重）
-export const occupationSkills = computed(() => {
-  // 神秘冰岛：无职业模板，全部技能可按职业技能点自由分配（SkillStep 以自由模式渲染）
-  if (character.era === 'iceland') return [];
-  let keys;
+// 不含补充位的本职技能键（用于「补充本职技能」选择器排除已有项）
+export const baseOccupationSkills = computed(() => {
   if (character.jobType === 'preset' && currentJob.value) {
     const { fixed, choices } = resolveJobSkills(currentJob.value);
     const chosen = choices.map((options, i) => {
       const pick = character.jobChoice[i];
       return pick && options.includes(pick) ? pick : options[0];
     });
-    keys = [...fixed, ...chosen];
-  } else {
-    // 自定义职业
-    keys = character.customSkills || [];
+    return [...new Set([...fixed, ...chosen].flatMap(expandSkillKey))];
   }
-  // 去重：职业定义可能多次出现同一分组技能（固定项与任选项、多个条目），
-  // 展开后会产生相同键（如 格斗(斗殴)），避免技能列表/幕间成长出现重复行
-  return [...new Set(keys.flatMap(expandSkillKey))];
+  return [];
+});
+
+// 该职业的补充本职技能位数量（社交技能合并为「说服」后空出的位，由玩家自选补足）
+export const bonusSkillCount = computed(() => {
+  if (character.jobType !== 'preset' || !currentJob.value) return 0;
+  return currentJob.value.bonus || 0;
+});
+
+// 最终本职技能键列表（展开分组技能后的完整列表，按键去重）
+export const occupationSkills = computed(() => {
+  // 神秘冰岛：无职业模板，全部技能可按职业技能点自由分配（SkillStep 以自由模式渲染）
+  if (character.era === 'iceland') return [];
+  if (character.jobType === 'preset' && currentJob.value) {
+    const bonus = (character.bonusSkills || []).slice(0, bonusSkillCount.value);
+    return [...new Set([...baseOccupationSkills.value, ...bonus])];
+  }
+  // 自定义职业
+  return [...new Set((character.customSkills || []).flatMap(expandSkillKey))];
 });
 
 // 去重后的本职技能分组名（用于技能分配时按分组渲染）

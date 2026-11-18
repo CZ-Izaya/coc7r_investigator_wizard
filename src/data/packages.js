@@ -15,10 +15,10 @@ export const experiencePackages = [
     skillPoints: 70,
     skills: [
       { name: '攀爬' }, { name: '格斗', child: '斗殴' }, { name: '射击', child: '步/霰' },
-      { name: '急救' }, { name: '恐吓' }, { name: '聆听' }, { name: '潜行' }, { name: '投掷' },
+      { name: '急救' }, { name: '说服' }, { name: '聆听' }, { name: '潜行' }, { name: '投掷' },
       { name: '妙手' }, { name: '侦查' }, { name: '生存' }, { name: '导航' },
     ],
-    skillsNote: '普通士兵可选上述大部分；军官含导航、社交（魅惑/说服/恐吓）一项。',
+    skillsNote: '普通士兵可选上述大部分；军官含导航、说服一项（修订版社交技能已统一为说服）。',
     requiredBackgrounds: ['战争相关的伤疤/疤痕或恐惧症/躁狂症'],
     autoWeapons: [],
     immunity: '对目击尸体和重伤员造成的理智损失免疫。',
@@ -36,9 +36,9 @@ export const experiencePackages = [
     skills: [
       { name: '攀爬' }, { name: '汽车驾驶' }, { name: '格斗', child: '斗殴' }, { name: '射击', child: '手枪' },
       { name: '射击', child: '步/霰' }, { name: '急救' }, { name: '法律' }, { name: '聆听' }, { name: '外语' },
-      { name: '取悦' }, { name: '话术' }, { name: '说服' }, { name: '恐吓' }, { name: '追踪' },
+      { name: '说服' }, { name: '追踪' },
     ],
-    skillsNote: '含两项社交技能（魅惑、话术、说服、恐吓中任选）。',
+    skillsNote: '含说服一项（修订版社交技能已统一为说服）。',
     requiredBackgrounds: ['警察工作相关的伤疤/疤痕或恐惧症/躁狂症'],
     autoWeapons: [],
     immunity: '对目击尸体造成的理智损失免疫。',
@@ -55,7 +55,7 @@ export const experiencePackages = [
     skillPoints: 60,
     skills: [
       { name: '攀爬' }, { name: '汽车驾驶' }, { name: '格斗' }, { name: '射击' },
-      { name: '取悦' }, { name: '话术' }, { name: '说服' }, { name: '恐吓' },
+      { name: '说服' },
       { name: '法律' }, { name: '聆听' }, { name: '锁匠' }, { name: '心理学' }, { name: '追踪' },
     ],
     skillsNote: '含格斗(任一)、射击(任一)、一项社交技能。',

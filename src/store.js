@@ -34,6 +34,7 @@ export {
   usedProPoints, usedInterestPoints, usedPackagePoints,
   currentJob, creditRange, totalProPoints, totalInterestPoints,
   resolveJobSkills, expandSkillKey, occupationSkills, occupationGroupNames,
+  baseOccupationSkills, bonusSkillCount,
   jobGroupHints, isOccupationSkill,
   getGroupChildren, ensureGroupChild,
 } from './store/skills.js';

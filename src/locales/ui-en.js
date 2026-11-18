@@ -159,6 +159,8 @@ export default {
     mode: 'Mode', strict: 'Strict', pulp: 'Pulp',
     modeHint: 'Strict: occupation skills and credit rating only take occupation points; interest skills only take interest points.\nPulp: occupation skills may take both occupation and interest points.',
     customPicker: 'Choose occupation skills (credit rating included by default; Cthulhu Mythos not allowed)',
+    bonusPicker: 'Additional occupation skill',
+    bonusHint: 'Charm, Fast Talk and Intimidate are merged into Persuade in this revision, leaving one social skill slot open. Choose {n} skill(s) to fill it; they use occupation points.',
     selectedN: '{n} / 8 selected',
     noSelect: '(not selectable)',
     creditRating: 'Credit rating',
